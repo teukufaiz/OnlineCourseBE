@@ -15,4 +15,7 @@ urlpatterns = [
     path('get_sub_section_on_section/<int:sectionid>', get_sub_section_on_section, name='get_sub_section_on_section'),
     path('get_sub_section_on_course/<int:courseid>', get_sub_section_on_course, name='get_sub_section_on_course'),
     path('delete_sub_section/<int:subsectionid>', delete_sub_section, name='delete_sub_section'),
+    path('assign_course', assign_course, name='assign_course'),
+    path('get_courses_by_user/<str:useremail>', get_courses_by_user, name='get_courses_by_user'),
+    path('get_user_by_course/<int:courseid>', get_user_by_course, name='get_user_by_course'),
 ]

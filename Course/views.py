@@ -35,6 +35,24 @@ def get_course_by_id(request,courseid):
     return JsonResponse({"response":course}, safe=False, status=status.HTTP_200_OK)
 
 @csrf_exempt
+def assign_course(request):
+    deserialize = json.loads(request.body)
+    user = User.objects.get(email=deserialize['email'])
+    course = Course.objects.get(course_id=deserialize['courseid'])
+    course.enrolled_users.add(user)
+    return JsonResponse({"message": "User assigned to course successfully"}, status=status.HTTP_200_OK)
+
+def get_courses_by_user(request, useremail):
+    user = User.objects.get(email=useremail)
+    courses = list(user.enrolled_courses.all().values("course_id","course_name"))
+    return JsonResponse({"response":courses}, safe=False, status=status.HTTP_200_OK)
+
+def get_user_by_course(request, courseid):
+    course = Course.objects.get(course_id=courseid)
+    users = list(course.enrolled_users.all().values("email"))
+    return JsonResponse({"response":users}, safe=False, status=status.HTTP_200_OK)
+
+@csrf_exempt
 def update_course(request,courseid):
     if request.method == 'POST':
         deserialize = json.loads(request.body)

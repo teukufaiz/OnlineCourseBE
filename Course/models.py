@@ -1,4 +1,5 @@
 from django.db import models
+from UserAuth.models import User
 
 class Course(models.Model):
     course_id = models.AutoField(primary_key=True)
@@ -7,6 +8,7 @@ class Course(models.Model):
     course_photo = models.CharField(max_length=150)
     course_price = models.IntegerField(default=0)
     course_created = models.DateTimeField(auto_now_add=True)
+    enrolled_users = models.ManyToManyField(User, related_name='enrolled_courses')
 
 class Section(models.Model):
     section_id = models.AutoField(primary_key=True)

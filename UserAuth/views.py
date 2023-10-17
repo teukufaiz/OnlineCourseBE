@@ -26,28 +26,35 @@ def register_user(request):
             user = User(name=deserialize['name'], email=deserialize['email'], password=hash_password)
             user.save()
             return JsonResponse({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
-
+ 
 @csrf_exempt
 def login_user(request):
     if request.method == 'POST':
-        deserialize = json.loads(request.body)
-        email = deserialize['email']
-        password = deserialize['password']
+        try:
+            deserialize = json.loads(request.body)
+            email = deserialize['email']
+            password = deserialize['password']
 
-        user = authenticate(request, username=email, password=password)
+            user = authenticate(request, username=email, password=password)
 
-        if user is not None:
-            tokens = MyTokenObtainPairView.as_view()(request).data
-            return JsonResponse(tokens)
-        else:
-            return JsonResponse({'message': 'Invalid credentials'}, status=400)
+            if user is not None:
+                tokens = MyTokenObtainPairView.as_view()(request).data
+                return JsonResponse(tokens, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        except json.JSONDecodeError:
+            return JsonResponse({'message': 'Invalid JSON format in request body'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        # Handle the case where the request method is not POST
+        return JsonResponse({'message': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @csrf_exempt
 def logout_user(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
-            refresh_token = data.get('refresh_token', '')
+            deserialize = json.loads(request.body)
+            refresh_token_json = json.loads(deserialize['refresh_token'])
+            refresh_token = refresh_token_json.get('refresh', '')
 
             if refresh_token:
                 try:
@@ -60,6 +67,37 @@ def logout_user(request):
             else:
                 return JsonResponse({'message': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return JsonResponse({'message': 'An error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'message': 'An error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
     return JsonResponse({'message': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@csrf_exempt
+def is_registered(request):
+    if request.method == 'POST':
+        try:
+            deserialize = json.loads(request.body)
+            email = deserialize['email']
+            if User.objects.filter(email=email).exists():
+                return JsonResponse({'message': 'User is registered'}, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse({'message': 'User is not registered'}, status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return JsonResponse({'message': 'An error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+
+    return JsonResponse({'message': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@csrf_exempt
+def is_admin(request):
+    try:
+        deserialize = json.loads(request.body)
+        email = deserialize['email']
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            if user.is_admin:
+                return JsonResponse({'message': 'User is admin'}, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse({'message': 'User is not admin'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return JsonResponse({'message': 'User is not registered'}, status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return JsonResponse({'message': 'An error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
