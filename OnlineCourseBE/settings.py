@@ -129,7 +129,25 @@ DATABASES = {
         'HOST': 'localhost',  # or the IP address of your database server
         'PORT': '5432',
     }
-}
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'defaultdb',
+    #     'USER': 'avnadmin',
+    #     'PASSWORD': 'AVNS_0Yd98Lk39NCn2m9x74E',
+    #     'HOST': 'pg-559a266-winbis49-52f2.a.aivencloud.com',  # or the IP address of your database server
+    #     'PORT': '19334',
+    # }
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'tlmrjkvv',
+    #     'USER': 'tlmrjkvv',
+    #     'PASSWORD': 'R_k120Bx5XFpVD1bz2a-vCsGOn1Genza',
+    #     'HOST': 'tiny.db.elephantsql.com',  # or the IP address of your database server
+    #     'PORT': '5432',
+    # }
+} 
 
 
 # Password validation

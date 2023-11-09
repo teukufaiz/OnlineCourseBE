@@ -3,6 +3,7 @@ from .views import *
 
 urlpatterns = [
     path('create_course', create_course, name='create_course'),
+    path('add_course_photo/<int:courseid>', add_course_photo, name='add_course_photo'),
     path('get_all_course', get_all_course, name='get_all_course'),
     path('get_course_by_id/<int:courseid>', get_course_by_id, name='get_course_by_id'),
     path('update_course/<int:courseid>', update_course, name='update_course'),
@@ -18,4 +19,6 @@ urlpatterns = [
     path('assign_course', assign_course, name='assign_course'),
     path('get_courses_by_user/<str:useremail>', get_courses_by_user, name='get_courses_by_user'),
     path('get_user_by_course/<int:courseid>', get_user_by_course, name='get_user_by_course'),
+    path('create_category', create_category, name='create_category'),
+    path('get_all_categories', get_all_categories, name='get_all_categories'),
 ]

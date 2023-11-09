@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local development settings
+.env
+/.venv
+/.vscode
+
+# Django generated files
+*.log
+*.pot
+*.pyc
+db.sqlite3
+/media
+/static
+
+# Ignore migrations
+**/migrations/*.py
+**/migrations/*.bak
+**/migrations/*.swp
+**/migrations/*.pyc
+**/migrations/*/__pycache__

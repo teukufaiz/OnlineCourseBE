@@ -10,9 +10,27 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def create_course(request):
     deserialize = json.loads(request.body)
-    course = Course(course_name=deserialize['name'], course_desc=deserialize['desc'], course_photo=deserialize['photo'], course_price=deserialize['price'])
+    course = Course(course_name=deserialize['name'], course_desc=deserialize['desc'], course_photo='', course_price=deserialize['price'])
     course.save()
-    return JsonResponse({'message': 'Course created successfully'}, status=status.HTTP_201_CREATED)
+    if (not deserialize['category']):   
+        category = Category.objects.get(category_name='uncategorized')
+        course.course_category.add(category)
+    else:
+        for categoryname in deserialize['category']:
+            category = Category.objects.get(category_name=categoryname)
+            course.course_category.add(category)
+
+    course_id = course.course_id
+
+    return JsonResponse({'courseId': course_id}, status=status.HTTP_201_CREATED)
+
+@csrf_exempt
+def add_course_photo(request, courseid):
+    deserialize = json.loads(request.body)
+    course = Course.objects.get(course_id = courseid)
+    course.course_photo = deserialize['photo']
+    course.save()
+    return JsonResponse({"message": "Course photo added successfully"}, status=status.HTTP_200_OK)
 
 def get_all_course(requests):
     courses = Course.objects.all()
@@ -21,18 +39,32 @@ def get_all_course(requests):
     for course in courses:
         course_data = {
             'course_id': course.course_id,
+            'course_name': course.course_name,
             'course_desc': course.course_desc,
             'course_photo': course.course_photo,
             'course_price': course.course_price,
-            'course_created': course.course_created.strftime('%Y-%m-%d %H:%M:%S')
+            'course_created': course.course_created,
+            'course_categories': [{'category_id': category.category_id, 'category_name': category.category_name} for category in course.course_category.all()]
         }
         course_dict[course.course_name] = course_data
 
     return JsonResponse(course_dict, safe=False, status=status.HTTP_200_OK)
 
 def get_course_by_id(request,courseid):
-    course = Course.objects.filter(course_id=courseid).values("course_id","course_name","course_desc","course_photo","course_price","course_created")[0]
+    course = Course.objects.filter(course_id=courseid).values("course_id","course_name","course_desc","course_photo","course_price","course_created","course_category")[0]
     return JsonResponse({"response":course}, safe=False, status=status.HTTP_200_OK)
+
+@csrf_exempt
+def create_category(request):
+    deserialize = json.loads(request.body)
+    category = Category(category_name=deserialize['newcategory'])
+    category.save()
+    return JsonResponse({'message': 'Category created successfully'}, status=status.HTTP_201_CREATED)
+
+def get_all_categories(request):
+    categories = Category.objects.all()
+    category_list = [{'category_id': category.category_id, 'category_name': category.category_name} for category in categories]
+    return JsonResponse({"response": category_list}, safe=False, status=status.HTTP_200_OK)
 
 @csrf_exempt
 def assign_course(request):
@@ -59,16 +91,29 @@ def update_course(request,courseid):
         course = Course.objects.get(course_id = courseid)
         new_name = deserialize['name']
         new_desc = deserialize['desc']
+        new_photo = deserialize['photo']
         new_price = deserialize['price']
-
+        
         if new_name:
             course.course_name = new_name
         if new_desc:
             course.course_desc = new_desc
-        if new_price:
+        if new_photo:
+            course.course_photo = new_photo
+        if new_price:   
             course.course_price = new_price
 
         course.save()
+
+        course.course_category.clear()
+
+        if (not deserialize['category']):   
+            category = Category.objects.get(category_name='uncategorized')
+            course.course_category.add(category)
+        else:
+            for category_id in deserialize['category']:
+                category = Category.objects.get(pk=category_id)
+                course.course_category.add(category)
 
         return JsonResponse({"message": "Course updated successfully"}, status=status.HTTP_200_OK)
 
