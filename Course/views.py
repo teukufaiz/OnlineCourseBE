@@ -33,7 +33,7 @@ def add_course_photo(request, courseid):
     return JsonResponse({"message": "Course photo added successfully"}, status=status.HTTP_200_OK)
 
 def get_all_course(requests):
-    courses = Course.objects.all()
+    courses = Course.objects.all().order_by('course_name')
 
     course_dict = {}
     for course in courses:

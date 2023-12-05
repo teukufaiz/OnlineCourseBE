@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from datetime import timedelta
 from pathlib import Path
+from sshtunnel import SSHTunnelForwarder
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -120,32 +121,45 @@ WSGI_APPLICATION = 'OnlineCourseBE.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# ssh_tunnel = SSHTunnelForwarder(
+#     ('149.28.133.123', 9357),
+#     ssh_username='root',
+#     ssh_password='?d2B)?5D)KCR8]s}',
+#     remote_bind_address=('127.0.0.1', 3306),
+# )
+
+
+# ssh_tunnel.start()
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'localhost',  # or the IP address of your database server
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'defaultdb',
-    #     'USER': 'avnadmin',
-    #     'PASSWORD': 'AVNS_0Yd98Lk39NCn2m9x74E',
-    #     'HOST': 'pg-559a266-winbis49-52f2.a.aivencloud.com',  # or the IP address of your database server
-    #     'PORT': '19334',
+    # 'default':{
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'public',
+    #     'USER': 'root',
+    #     'PASSWORD': 'lesmana1379',
+    #     'HOST': 'localhost',
+    #     'PORT': '3306',
     # }
 
     # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'tlmrjkvv',
-    #     'USER': 'tlmrjkvv',
-    #     'PASSWORD': 'R_k120Bx5XFpVD1bz2a-vCsGOn1Genza',
-    #     'HOST': 'tiny.db.elephantsql.com',  # or the IP address of your database server
-    #     'PORT': '5432',
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'dev_winbizoc',
+    #     'USER': 'dev_winbizoc',
+    #     'PASSWORD': 'winbizoc123',
+    #     'HOST': 'localhost',
+    #     'PORT': ssh_tunnel.local_bind_port,
+    #     'OPTIONS': {
+    #         'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+    #     },
     # }
 } 
 
