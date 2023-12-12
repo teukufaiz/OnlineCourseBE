@@ -11,9 +11,12 @@ class Course(models.Model):
     course_desc = models.TextField(max_length=300)
     course_photo = models.CharField(max_length=150)
     course_price = models.IntegerField(default=0)
+    course_rating = models.IntegerField(default=0)
+    course_published = models.BooleanField(default=False)
     course_created = models.DateTimeField(auto_now_add=True)
     course_category = models.ManyToManyField(Category, related_name='courses')
     enrolled_users = models.ManyToManyField(User, related_name='enrolled_courses')
+    rating_users = models.ManyToManyField(User, related_name='rated_courses')
 
 class Section(models.Model):
     section_id = models.AutoField(primary_key=True)

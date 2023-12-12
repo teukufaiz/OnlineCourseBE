@@ -21,4 +21,8 @@ urlpatterns = [
     path('get_user_by_course/<int:courseid>', get_user_by_course, name='get_user_by_course'),
     path('create_category', create_category, name='create_category'),
     path('get_all_categories', get_all_categories, name='get_all_categories'),
+    path('add_rating_course', add_rating_course, name='add_rating_course'),
+    path('get_all_user_rating/<int:courseid>', get_all_user_rating, name='get_all_user_rating'),
+    path('get_course_rating/<int:courseid', get_course_rating, name='get_course_rating'),
 ]
+    

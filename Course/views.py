@@ -51,8 +51,17 @@ def get_all_course(requests):
     return JsonResponse(course_dict, safe=False, status=status.HTTP_200_OK)
 
 def get_course_by_id(request,courseid):
-    course = Course.objects.filter(course_id=courseid).values("course_id","course_name","course_desc","course_photo","course_price","course_created","course_category")[0]
-    return JsonResponse({"response":course}, safe=False, status=status.HTTP_200_OK)
+    course = Course.objects.filter(course_id=courseid).first()
+    course_data = {
+        'course_id': course.course_id,
+        'course_name': course.course_name,
+        'course_desc': course.course_desc,
+        'course_photo': course.course_photo,
+        'course_price': course.course_price,
+        'course_created': course.course_created,
+        'course_categories': [{'category_id': category.category_id, 'category_name': category.category_name} for category in course.course_category.all()]
+    }
+    return JsonResponse({"response":course_data}, safe=False, status=status.HTTP_200_OK)
 
 @csrf_exempt
 def create_category(request):
@@ -65,6 +74,34 @@ def get_all_categories(request):
     categories = Category.objects.all()
     category_list = [{'category_id': category.category_id, 'category_name': category.category_name} for category in categories]
     return JsonResponse({"response": category_list}, safe=False, status=status.HTTP_200_OK)
+
+def add_rating_course(request):
+    deserialize = json.loads(request.body)
+    course = Course.objects.get(course_id=deserialize['courseid'])
+    user = User.objects.get(email=deserialize['email'])
+    new_rating = deserialize['rating']
+
+    if course.rating_users:
+        course.course_rating = (course.course_rating * len(course.rating_users.all()) + new_rating) / (len(course.rating_users.all()) + 1)
+        course.rating_users.add(user)
+        course.save()
+    else:
+        course.rating_users.add(user)
+        course.course_rating = new_rating
+        course.save()
+
+    return JsonResponse({"message": "Rating added successfully"}, status=status.HTTP_200_OK)
+
+def get_all_user_rating(request, courseid):
+    course = Course.objects.get(course_id=courseid)
+    users = course.rating_users.all()
+    user_list = [{'email': user.email} for user in users]
+    return JsonResponse({"response": user_list}, safe=False, status=status.HTTP_200_OK)
+
+def get_course_rating(request, courseid):
+    course = Course.objects.get(course_id=courseid)
+    rating = course.course_rating
+    return JsonResponse({"response": rating}, safe=False, status=status.HTTP_200_OK)
 
 @csrf_exempt
 def assign_course(request):
