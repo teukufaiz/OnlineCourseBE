@@ -35,7 +35,7 @@ def add_course_photo(request, courseid):
 def get_all_course(requests):
     courses = Course.objects.all().order_by('course_name')
 
-    course_dict = {}
+    course_list = []
     for course in courses:
         course_data = {
             'course_id': course.course_id,
@@ -46,9 +46,9 @@ def get_all_course(requests):
             'course_created': course.course_created,
             'course_categories': [{'category_id': category.category_id, 'category_name': category.category_name} for category in course.course_category.all()]
         }
-        course_dict[course.course_name] = course_data
+        course_list.append(course_data)
 
-    return JsonResponse(course_dict, safe=False, status=status.HTTP_200_OK)
+    return JsonResponse(course_list, safe=False, status=status.HTTP_200_OK)
 
 def get_course_by_id(request,courseid):
     course = Course.objects.filter(course_id=courseid).first()
@@ -57,6 +57,7 @@ def get_course_by_id(request,courseid):
         'course_name': course.course_name,
         'course_desc': course.course_desc,
         'course_photo': course.course_photo,
+        'course_rating' : course.course_rating,
         'course_price': course.course_price,
         'course_created': course.course_created,
         'course_categories': [{'category_id': category.category_id, 'category_name': category.category_name} for category in course.course_category.all()]
