@@ -41,6 +41,7 @@ def get_all_course(requests):
             'course_id': course.course_id,
             'course_name': course.course_name,
             'course_desc': course.course_desc,
+            'course_rating' : course.course_rating,
             'course_photo': course.course_photo,
             'course_price': course.course_price,
             'course_created': course.course_created,
