@@ -12,12 +12,17 @@ def create_course(request):
     deserialize = json.loads(request.body)
     course = Course(course_name=deserialize['name'], course_desc=deserialize['desc'], course_photo='', course_price=deserialize['price'])
     course.save()
-    if (not deserialize['category']):   
-        category = Category.objects.get(category_name='uncategorized')
-        course.course_category.add(category)
+    if (not deserialize['category']):
+        if Category.objects.filter(category_name='uncategorized').exists():
+            category = Category.objects.get(category_name='uncategorized')
+            course.course_category.add(category)
+        else:
+            new_category = Category(category_name='uncategorized')
+            new_category.save()
+            course.course_category.add(new_category)
     else:
-        for categoryname in deserialize['category']:
-            category = Category.objects.get(category_name=categoryname)
+        for categoryid in deserialize['category']:
+            category = Category.objects.get(category_id=categoryid)
             course.course_category.add(category)
 
     course_id = course.course_id
